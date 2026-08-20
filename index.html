@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>WORD ADVENTURE 3 — นักสร้างเอกสาร</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#1769c2;--deep:#123d70;--gold:#f7b82b;--pink:#ff6f91;--ink:#24364b;--paper:#fffdf7;--glass:rgba(255,255,255,.92);--shadow:0 22px 60px rgba(18,61,112,.22)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:'Mali',system-ui,sans-serif;color:var(--ink)}
+body{background:#d9efff}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.page{display:none;min-height:100vh;padding:clamp(14px,3vw,34px);position:relative;overflow:auto;background-image:linear-gradient(180deg,rgba(10,44,89,.10),rgba(10,44,89,.26)),url('images/house.png');background-position:center;background-size:cover;background-attachment:fixed}
+.page.active{display:flex;align-items:center;justify-content:center}
+.page:after{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 15% 10%,rgba(255,255,255,.35),transparent 25%),radial-gradient(circle at 90% 80%,rgba(255,231,126,.20),transparent 30%)}
+.wrap{position:relative;z-index:2;width:min(1180px,100%);background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.8);border-radius:32px;box-shadow:var(--shadow);backdrop-filter:blur(10px);padding:clamp(18px,3vw,32px)}
+.center{text-align:center}.eyebrow{display:inline-flex;gap:8px;align-items:center;background:#eaf4ff;color:var(--blue);border:1px solid #cce2fa;padding:7px 14px;border-radius:999px;font-weight:700}
+h1{font-size:clamp(34px,6vw,64px);line-height:1.08;color:var(--deep);margin:12px 0 8px}.nowrap-title{font-size:clamp(24px,3.2vw,38px);white-space:nowrap;line-height:1.2;margin:0 0 12px;overflow:visible}h2{font-size:clamp(25px,4vw,40px);line-height:1.2;color:var(--deep);margin:8px 0 14px}h3{color:var(--deep);margin:6px 0 10px}p{font-size:18px;line-height:1.7;margin:8px 0}
+.btn{border:0;border-radius:16px;padding:12px 20px;background:linear-gradient(135deg,#2f8df6,#1769c2);color:white;font-weight:700;box-shadow:0 8px 18px rgba(23,105,194,.22);transition:.15s transform,.15s filter}.btn:hover{transform:translateY(-2px);filter:brightness(1.05)}.btn.secondary{background:white;color:var(--blue);border:2px solid #cfe3f7;box-shadow:none}.btn.gold{background:linear-gradient(135deg,#ffd45c,#f0a900);color:#5b3b00}.btn.danger{background:#fff0f3;color:#d64b69;border:2px solid #ffd1da;box-shadow:none}.btn.big{font-size:19px;padding:14px 26px}
+.field{display:block;text-align:left;margin:12px 0}.field span{font-weight:700}.field input{width:100%;margin-top:7px;padding:13px 15px;border:2px solid #d5e4f0;border-radius:14px;background:#fff;outline:none}.field input:focus,.field textarea:focus{border-color:#65a8e9;box-shadow:0 0 0 4px #65a8e91c}
+.start-layout{display:grid;grid-template-columns:minmax(300px, .95fr) minmax(360px, 1.05fr);gap:clamp(24px,4vw,56px);align-items:center}.start-art{position:relative;min-height:500px;display:flex;align-items:flex-end;justify-content:center;padding:10px 10px 0}.start-art .wordy{height:470px;max-width:100%;object-fit:contain;filter:drop-shadow(0 18px 16px rgba(0,0,0,.24))}.form-panel{padding:22px 10px;max-width:560px}.start-copy{max-width:540px}.start-copy h1{font-size:clamp(38px,5vw,60px);margin:10px 0 12px}.start-copy p{max-width:520px}.start-copy .subcopy{font-size:17px;color:#5d7183}.start-actions{margin-top:18px}.safe-note{font-size:13px;text-align:center;color:#718391;margin-top:10px}.wrap h1,.wrap h2,.wrap h3,.wrap p,.wrap label,.wrap span{overflow-wrap:break-word;word-break:normal}
+.progress{display:flex;gap:8px;align-items:center;margin-bottom:18px}.dot{height:10px;flex:1;border-radius:999px;background:#dbe8f2}.dot.on{background:linear-gradient(90deg,#2f8df6,#62b5ff)}.step-label{font-weight:700;color:#60788e;white-space:nowrap}
+.scene{position:relative;min-height:590px;border-radius:26px;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(0,30,70,.10)),url('images/house.png') center/cover;display:flex;flex-direction:column;justify-content:flex-end;padding:24px}.scene:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.18) 50%,rgba(9,38,72,.28));pointer-events:none}.scene>*{position:relative;z-index:1}.characters{display:flex;justify-content:center;align-items:flex-end;gap:clamp(8px,4vw,45px);height:280px}.characters img{height:235px;max-width:31%;object-fit:contain;filter:drop-shadow(0 14px 10px rgba(0,0,0,.22))}.characters img.wordy{height:275px}.mission{max-width:850px;margin:0 auto;background:rgba(255,255,255,.94);border-radius:26px;padding:20px 24px;text-align:center;box-shadow:0 14px 35px rgba(24,56,91,.23)}.mission-glass{background:rgba(255,255,255,.72);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.72)}
+.toolbar-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.user-chip{background:#eef7ff;border:1px solid #d4e9fb;padding:8px 13px;border-radius:999px;color:var(--blue);font-weight:700}.editor-grid{display:grid;grid-template-columns:285px 1fr;gap:18px;margin-top:16px}.sidebar{background:#f3f8fc;border:1px solid #dbe8f1;border-radius:22px;padding:15px;height:max-content;position:sticky;top:12px}.group{padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid #d9e6ef}.group:last-child{border:0;margin:0}.toolrow{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.tool,.select{width:100%;border:2px solid #d6e4ee;background:white;border-radius:12px;padding:9px 8px;color:#26445d;font-weight:700}.tool:hover{border-color:#8ec1ee}.tool.active{background:#e8f4ff;border-color:#2f8df6;color:#125ca8}.library .lib.selected{border-color:var(--blue);background:#edf6ff;transform:translateY(-1px)}.library{display:grid;grid-template-columns:1fr 1fr;gap:8px}.lib{border:2px solid #d6e4ee;background:#fff;border-radius:12px;padding:6px}.lib img{display:block;width:100%;height:70px;object-fit:contain}.lib small{display:block;font-weight:700;margin-top:4px}.emoji-lib span{display:flex;height:70px;align-items:center;justify-content:center;font-size:46px}.paper-wrap{background:rgba(224,238,248,.6);border-radius:22px;padding:18px;min-height:760px}.paper{width:min(760px,100%);min-height:700px;margin:auto;background:var(--paper);border:1px solid #e7dac3;border-radius:7px;box-shadow:0 15px 35px rgba(75,62,40,.13);padding:45px 52px;position:relative}.paper:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(transparent 0,transparent 31px,rgba(122,151,170,.06) 32px);pointer-events:none}.editable{position:relative;z-index:1;outline:none;min-height:42px}.editable:empty:before{content:attr(data-placeholder);color:#a9b7c2}.title-edit{font-size:34px;font-weight:700;min-height:50px;margin-bottom:22px}.story-edit{font-size:18px;line-height:1.85;min-height:210px;white-space:pre-wrap}.doc-image{position:relative;z-index:1;min-height:150px;margin:24px 0;display:flex;justify-content:center;align-items:center;border:2px dashed #c7d7e0;border-radius:16px;padding:12px;color:#8a9aa5}.doc-image img{max-width:100%;max-height:260px;object-fit:contain}.author{position:relative;z-index:1;margin-top:90px;padding-top:14px;border-top:1px solid #d9cdbb;text-align:center;color:#65727c;line-height:1.7}.editor-actions{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:16px}
+.preview-wrap{background:rgba(226,240,249,.65);border-radius:22px;padding:20px}.preview-paper{width:min(760px,100%);margin:auto;background:var(--paper);border:1px solid #e7dac3;border-radius:7px;box-shadow:0 15px 35px rgba(75,62,40,.13);padding:44px 52px;min-height:650px}.preview-paper .story{white-space:pre-wrap;line-height:1.85}.preview-paper .doc-image{border:0;min-height:140px}.reason-box{margin-top:18px}.reason-box textarea{width:100%;min-height:150px;border:2px solid #d6e4ee;border-radius:16px;padding:14px;resize:vertical;outline:none;background:white}
+.final-grid{display:grid;grid-template-columns:1fr 330px;gap:20px;align-items:start}.score-card{background:#f4f9fd;border:1px solid #dbe8f1;border-radius:20px;padding:18px}.check{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #dbe8f1}.check:last-child{border:0}.badge-success{display:inline-block;background:#e9fbf0;color:#18834b;border:1px solid #bceccf;padding:7px 12px;border-radius:999px;font-weight:700}
+.toast{position:fixed;right:18px;bottom:18px;z-index:99;background:#163f70;color:#fff;padding:12px 16px;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.2);display:none}.toast.show{display:block}
+@media(max-width:900px){.start-layout,.editor-grid,.final-grid{grid-template-columns:1fr}.sidebar{position:relative;top:auto}.start-art{min-height:390px}.start-art .wordy{height:370px}.form-panel{padding:8px 4px}.paper{padding:30px 24px}.characters{height:230px}.characters img{height:190px}.characters img.wordy{height:225px}.scene{min-height:650px}}
+@media(max-width:600px){.page{padding:10px}.wrap{border-radius:22px;padding:14px}.start-art{min-height:300px}.start-art .wordy{height:300px}.start-art .kid{height:145px}.characters{gap:0;height:190px}.characters img{height:155px}.characters img.wordy{height:190px}.mission{padding:16px}.mission p{font-size:16px}.paper{min-height:620px;padding:26px 18px}.preview-paper{padding:28px 20px}.title-edit{font-size:28px}.story-edit{font-size:17px}.toolbar-head .btn{padding:9px 12px}}
+@media print{body{background:white}.page{display:none!important}.page#p5{display:block!important;background:white!important;padding:0}.page#p5:after,.page#p5 .wrap>div:not(.preview-wrap),.page#p5 .btn{display:none!important}.wrap{box-shadow:none;background:white;border:0}.preview-wrap{background:white;padding:0}.preview-paper{box-shadow:none}}
+
+.mission-bg{position:relative;min-height:520px;border-radius:24px;overflow:hidden;background-size:cover;background-position:center}
+.mission-bg .mission-overlay{position:absolute;inset:0;background:rgba(255,255,255,.16)}
+.mission-content{position:relative;z-index:2;min-height:520px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px}
+.mission-box{width:min(820px,92%);background:rgba(255,255,255,.76);border:1px solid rgba(255,255,255,.85);backdrop-filter:blur(3px);border-radius:28px;padding:30px;box-shadow:0 18px 45px rgba(31,65,84,.18)}
+
+.mission-characters img{object-fit:contain;filter:drop-shadow(0 10px 12px rgba(0,0,0,.18))}
+.char-wordy{width:145px;max-height:190px}.char-child{width:125px;max-height:180px}
+.library-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.library-item{border:2px solid #d7e5ef;background:#fff;border-radius:12px;padding:8px;cursor:pointer;font-size:30px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.library-item span{font-family:Mali,sans-serif;font-size:12px;color:#455a64}
+.library-item:hover,.library-item.selected{border-color:#2f80ed;background:#edf6ff}
+@media(max-width:700px){.char-wordy{width:100px}.char-child{width:85px}.library-grid{grid-template-columns:repeat(2,1fr)}}
+
+
+
+
+.mission-text h2{font-size:clamp(28px,4vw,42px);margin:8px 0 15px}
+.mission-text p{font-size:clamp(17px,2vw,21px);line-height:1.8;margin:8px 0}
+
+.mission-characters .char{object-fit:contain;filter:drop-shadow(0 12px 12px rgba(0,0,0,.18))}
+.mission-characters .wordy{width:145px;max-height:185px}
+.mission-characters .boy,.mission-characters .girl{width:120px;max-height:175px}
+@media(max-width:700px){
+ 
+ 
+ .mission-characters .wordy{width:105px}.mission-characters .boy,.mission-characters .girl{width:88px}
+}
+
+.sound-control{position:fixed;top:18px;right:18px;z-index:9999}
+.sound-btn{border:2px solid rgba(255,255,255,.9);background:rgba(255,255,255,.9);color:#24577f;border-radius:999px;padding:10px 15px;font-family:Mali,sans-serif;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(30,60,80,.16);backdrop-filter:blur(5px)}
+.sound-btn:hover{transform:translateY(-1px);background:#fff}
+
+.mission-scene{
+  position:relative;
+  width:min(1240px,100%);
+  min-height:calc(100vh - 44px);
+  margin:auto;
+  border-radius:30px;
+  overflow:hidden;
+  background-image:url("images/house.png");
+  background-size:cover;
+  background-position:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:55px;
+}
+.mission-frame{
+  position:relative;
+  width:min(1050px,94%);
+  min-height:650px;
+  background:#ffffff;
+  border-radius:34px;
+  box-shadow:0 24px 65px rgba(20,48,70,.24);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  padding:35px 70px 55px;
+  overflow:hidden;
+}
+.mission-characters{
+  position:relative;
+  z-index:2;
+  width:100%;
+  height:245px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  gap:35px;
+  flex-shrink:0;
+}
+.mission-characters .char{
+  object-fit:contain;
+  filter:drop-shadow(0 10px 10px rgba(0,0,0,.18));
+}
+.mission-characters .wordy{width:170px;height:220px}
+.mission-characters .boy,.mission-characters .girl{width:145px;height:205px}
+.mission-text{
+  width:min(760px,100%);
+  text-align:center;
+  padding-top:20px;
+}
+.mission-text h2{
+  font-size:clamp(28px,4vw,42px);
+  margin:8px 0 15px;
+}
+.mission-text p{
+  font-size:clamp(17px,2vw,21px);
+  line-height:1.8;
+  margin:8px 0;
+}
+@media(max-width:700px){
+  .mission-scene{padding:20px}
+  .mission-frame{width:100%;min-height:580px;padding:28px 22px 40px}
+  .mission-characters{height:190px;gap:8px}
+  .mission-characters .wordy{width:125px;height:170px}
+  .mission-characters .boy,.mission-characters .girl{width:105px;height:155px}
+}
+</style>
+</head>
+<body>
+<div id="soundControl" class="sound-control">
+  <button id="soundBtn" class="sound-btn" type="button" onclick="toggleSound()" aria-label="เปิดหรือปิดเสียง">🔊 เสียงเปิด</button>
+</div>
+<audio id="bgm" loop preload="auto">
+  <source src="audio/sound.mp3" type="audio/mpeg">
+</audio>
+
+
+<section id="p1" class="page active">
+<div class="wrap">
+  <div class="start-layout">
+    <div class="start-art" aria-label="เวอร์ดี้ต้อนรับผู้เล่น">
+      <img class="wordy" src="images/wordy.png" alt="เวอร์ดี้">
+    </div>
+    <div class="form-panel start-copy">
+      <div class="eyebrow">🟣 WORD ADVENTURE 3</div>
+      <h1 class="nowrap-title">📄 นักสร้างเอกสาร</h1>
+      <p><b>มาสร้างเอกสารของเราเองกันเถอะ!</b></p>
+      <p class="subcopy">นักเรียนจะได้คิดเรื่องของตนเอง และทดลองสร้างเอกสารให้เป็นผลงานของตนเอง</p>
+
+      <label class="field"><span>👤 ชื่อนักเรียน</span><input id="name" autocomplete="name" placeholder="พิมพ์ชื่อของฉัน"></label>
+      <label class="field"><span>🔢 เลขที่</span><input id="no" inputmode="numeric" placeholder="พิมพ์เลขที่"></label>
+
+      <div class="start-actions">
+        <button class="btn big" style="width:100%" onclick="startGame()">🎮 เริ่มภารกิจ</button>
+      </div>
+      <p class="safe-note">💾 ข้อมูลของฉันจะถูกจำไว้ในเครื่องนี้ระหว่างเล่นเกม</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<section id="p2" class="page">
+  <div class="mission-scene">
+    <div class="mission-frame">
+      <div class="mission-characters">
+        <img src="images/boy.png" class="char boy" alt="เด็กชาย">
+        <img src="images/wordy.png" class="char wordy" alt="เวอร์ดี้">
+        <img src="images/girl.png" class="char girl" alt="เด็กหญิง">
+      </div>
+      <div class="mission-text">
+        <div class="eyebrow">🏰 ภารกิจนักสร้างเอกสาร</div>
+        <h2>สวัสดี <span id="hello"></span>! 👋</h2>
+        <p>วันนี้นักเรียนจะได้สร้างเอกสารของตนเอง 1 เรื่อง</p>
+        <p>นักเรียนสามารถเลือกวิธีจัดรูปแบบและรูปภาพได้ตามความคิดของตนเอง</p>
+        <button class="btn big" onclick="showPage(3)">📄 เริ่มสร้างเอกสาร</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="p3" class="page">
+<div class="wrap">
+  <div class="progress"><span class="step-label">2/5</span><span class="dot on"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+  <div class="toolbar-head"><div><div class="eyebrow">📝 ห้องสร้างเอกสาร</div><h2 style="margin-bottom:0">สร้างผลงานของฉัน</h2></div><div class="user-chip">👤 <span id="topName"></span> · เลขที่ <span id="topNo"></span></div></div>
+  <p>ลองใช้เครื่องมือด้านซ้าย แล้วเลือกแบบที่คิดว่าเหมาะกับเรื่องของตัวเองที่สุด</p>
+  <div class="editor-grid">
+    <aside class="sidebar">
+      <div class="group"><h3>📌 ชื่อเรื่อง</h3>
+        <div class="toolrow"><button class="tool" onclick="toggleStyle('title','bold',this)"><b>B</b></button><button class="tool" onclick="toggleStyle('title','italic',this)"><i>I</i></button><button class="tool" onclick="toggleStyle('title','underline',this)"><u>U</u></button></div>
+        <select class="select" onchange="setSize('title',this.value)"><option value="34">ขนาดเริ่มต้น 34</option><option value="24">24</option><option value="28">28</option><option value="32">32</option><option value="34">34</option><option value="38">38</option><option value="44">44</option></select>
+        <div class="toolrow"><button class="tool" onclick="setAlign('title','left',this)">⬅️</button><button class="tool" onclick="setAlign('title','center',this)">↔️</button><button class="tool" onclick="setAlign('title','right',this)">➡️</button></div>
+      </div>
+      <div class="group"><h3>📄 เนื้อหา</h3>
+        <div class="toolrow"><button class="tool" onclick="toggleStyle('story','bold',this)"><b>B</b></button><button class="tool" onclick="toggleStyle('story','italic',this)"><i>I</i></button><button class="tool" onclick="toggleStyle('story','underline',this)"><u>U</u></button></div>
+        <select class="select" onchange="setSize('story',this.value)"><option value="18">ขนาดเริ่มต้น 18</option><option value="14">14</option><option value="16">16</option><option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="24">24</option></select>
+        <div class="toolrow"><button class="tool" onclick="setAlign('story','left',this)">⬅️</button><button class="tool" onclick="setAlign('story','center',this)">↔️</button><button class="tool" onclick="setAlign('story','right',this)">➡️</button></div>
+      </div>
+      <div class="group"><h3>🖼️ รูปภาพ</h3>
+        <button class="tool" onclick="document.getElementById('file').click()">📁 เลือกรูปจากเครื่อง</button>
+        <input id="file" type="file" accept="image/*" hidden onchange="uploadImage(event)">
+        <p style="font-size:13px;margin:7px 0">หรือเลือกจากคลังรูป</p>
+        <div class="library">
+          <button class="lib emoji-lib" onclick="pickEmoji('🐱','แมว')"><span>🐱</span><small>แมว</small></button>
+          <button class="lib emoji-lib" onclick="pickEmoji('🌳','ต้นไม้')"><span>🌳</span><small>ต้นไม้</small></button>
+          <button class="lib emoji-lib" onclick="pickEmoji('🌈','สายรุ้ง')"><span>🌈</span><small>สายรุ้ง</small></button>
+          <button class="lib emoji-lib" onclick="pickEmoji('⭐','ดาว')"><span>⭐</span><small>ดาว</small></button>
+          <button class="lib emoji-lib" onclick="pickEmoji('🏫','โรงเรียน')"><span>🏫</span><small>โรงเรียน</small></button>
+          <button class="lib emoji-lib" onclick="pickEmoji('✈️','การเดินทาง')"><span>✈️</span><small>การเดินทาง</small></button>
+        </div>
+        <button class="tool danger" style="margin-top:8px" onclick="removeImage()">🗑️ ลบรูป</button>
+      </div>
+      <button class="btn secondary" style="width:100%" onclick="saveDraft()">💾 บันทึกงานไว้ก่อน</button>
+    </aside>
+    <main class="paper-wrap">
+      <div class="paper">
+        <div id="titleEdit" class="editable title-edit" contenteditable="true" data-placeholder="พิมพ์ชื่อเรื่องของฉัน"></div>
+        <div id="storyEdit" class="editable story-edit" contenteditable="true" data-placeholder="เขียนเรื่องของฉันที่นี่..."></div>
+        <div id="docImage" class="doc-image">🖼️ เลือกรูปภาพที่ต้องการใส่ในเอกสาร</div>
+        <div class="author"><div>ผู้จัดทำ: <b id="authorName"></b></div><div>เลขที่ <b id="authorNo"></b></div></div>
+      </div>
+      <div class="editor-actions"><button class="btn secondary" onclick="clearDocument()">🧹 ล้างเอกสาร</button><button class="btn big" onclick="openReflection()">➡️ ไปต่อ</button></div>
+    </main>
+  </div>
+</div>
+</section>
+
+<section id="p4" class="page">
+<div class="wrap">
+  <div class="progress"><span class="step-label">3/5</span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span></div>
+  <div class="center"><div class="eyebrow">💭 สะท้อนการออกแบบ</div><h2>ข้อ 1. ฉันเลือกจัดชื่อเรื่องแบบนี้ เพราะ...</h2><p>ดูผลงานของตัวเอง แล้วอธิบายเหตุผลสั้น ๆ</p></div>
+  <div class="preview-wrap"><div id="reflectionPaper" class="preview-paper"></div></div>
+  <div class="reason-box"><textarea id="reason" placeholder="ฉันเลือกจัดชื่อเรื่องแบบนี้ เพราะ..."></textarea></div>
+  <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="btn secondary" onclick="showPage(3)">⬅️ กลับไปแก้ไข</button><button class="btn gold big" onclick="finishGame()">🏆 ส่งผลงาน</button></div>
+</div>
+</section>
+
+<section id="p5" class="page">
+<div class="wrap">
+  <div class="progress"><span class="step-label">4/5</span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot"></span></div>
+  <div class="center"><span class="badge-success">🎉 ภารกิจสำเร็จ</span><h1>ผลงานของฉัน</h1><p>เก่งมาก <b id="finalName"></b>! นักเรียนสร้างเอกสารด้วยความคิดของตัวเองสำเร็จแล้ว</p></div>
+  <div class="final-grid">
+    <div class="preview-wrap"><div id="finalPaper" class="preview-paper"></div></div>
+    <aside class="score-card"><h3>🌟 สิ่งที่ฉันทำได้</h3><div class="check">✅ <span>คิดชื่อเรื่องและเนื้อหาด้วยตัวเอง</span></div><div class="check">✅ <span>ทดลองจัดรูปแบบตัวอักษร</span></div><div class="check">✅ <span>เลือกภาพประกอบให้ผลงาน</span></div><div class="check">✅ <span>อธิบายเหตุผลในการออกแบบ</span></div><h3 style="margin-top:18px">💭 เหตุผลของฉัน</h3><p id="finalReason" style="font-size:16px"></p><button class="btn gold" style="width:100%;margin-top:8px" onclick="downloadWorkFile()">📥 ดาวน์โหลดไฟล์ผลงาน</button><button class="btn secondary" style="width:100%;margin-top:8px" onclick="restart()">🔄 เริ่มใหม่</button></aside>
+  </div>
+</div>
+</section>
+
+<div id="toast" class="toast"></div>
+<script>
+const S={name:'',no:'',titleHTML:'',storyHTML:'',img:null,reason:''};
+const $=id=>document.getElementById(id);
+function showPage(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));$('p'+n).classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window._toast);window._toast=setTimeout(()=>t.classList.remove('show'),1800)}
+function startGame(){const name=$('name').value.trim(),no=$('no').value.trim();if(!name||!no){toast('กรุณากรอกชื่อและเลขที่ก่อนเริ่มเกม');return}S.name=name;S.no=no;localStorage.setItem('wa3Student',JSON.stringify({name,no}));$('hello').textContent=name;$('topName').textContent=name;$('topNo').textContent=no;$('authorName').textContent=name;$('authorNo').textContent=no;showPage(2);startSound()}
+function toggleStyle(target,style,btn){const el=target==='title'?$ ('titleEdit'):$('storyEdit');el.focus();document.execCommand(style,false,null);btn.classList.toggle('active');syncDraft()}
+function setAlign(target,align,btn){const el=target==='title'?$ ('titleEdit'):$('storyEdit');el.focus();document.execCommand('justify'+(align==='center'?'Center':align==='right'?'Right':'Left'),false,null);btn.parentElement.querySelectorAll('.tool').forEach(b=>b.classList.remove('active'));btn.classList.add('active');syncDraft()}
+function setSize(target,size){const el=target==='title'?$ ('titleEdit'):$('storyEdit');el.style.fontSize=size+'px';syncDraft()}
+function pickImage(src,name){S.img={src,name};renderImage();syncDraft();toast('เพิ่มรูป '+name+' แล้ว')}
+function uploadImage(e){const f=e.target.files[0];if(!f)return;if(!f.type.startsWith('image/')){toast('ไฟล์นี้ไม่ใช่รูปภาพ');return}const r=new FileReader();r.onload=()=>{S.img={src:r.result,name:f.name};renderImage();syncDraft();toast('เพิ่มรูปจากเครื่องแล้ว')};r.readAsDataURL(f)}
+function renderImage(){const a=$('docImage');if(!S.img){a.innerHTML='🖼️ เลือกรูปภาพที่ต้องการใส่ในเอกสาร';return}if(S.img.src&&S.img.src.startsWith('emoji:')){a.innerHTML='<div style="font-size:110px;line-height:1">'+escapeHtml(S.img.src.slice(6))+'</div>';}else{a.innerHTML='<img src="'+S.img.src+'" alt="'+escapeHtml(S.img.name||'รูปภาพ')+'">'}}
+function removeImage(){S.img=null;renderImage();syncDraft();toast('ลบรูปแล้ว')}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function clearDocument(){if(!confirm('ต้องการล้างชื่อเรื่อง เนื้อหา และรูปภาพทั้งหมดหรือไม่'))return;$('titleEdit').innerHTML='';$('storyEdit').innerHTML='';S.img=null;renderImage();localStorage.removeItem('wa3Draft');toast('ล้างเอกสารแล้ว')}
+function syncDraft(){S.titleHTML=$('titleEdit').innerHTML;S.storyHTML=$('storyEdit').innerHTML;const draft={...S};localStorage.setItem('wa3Draft',JSON.stringify(draft))}
+function saveDraft(){syncDraft();toast('บันทึกงานไว้ในเครื่องแล้ว')}
+function openReflection(){S.titleHTML=$('titleEdit').innerHTML.trim();S.storyHTML=$('storyEdit').innerHTML.trim();if(!S.titleHTML||!S.storyHTML){toast('กรุณาใส่ชื่อเรื่องและเนื้อหาก่อนนะ');return}syncDraft();$('reflectionPaper').innerHTML=paperHTML(false);$('reason').value=S.reason||'';showPage(4)}
+function paperHTML(showAuthor=true){let img=S.img?(S.img.src&&S.img.src.startsWith('emoji:')?'<div class="doc-image" style="font-size:110px;line-height:1">'+escapeHtml(S.img.src.slice(6))+'</div>':'<div class="doc-image"><img src="'+S.img.src+'" alt="รูปภาพประกอบ"></div>'):'<div class="doc-image">🖼️ ยังไม่ได้เลือกรูปภาพ</div>';let author=showAuthor?'<div class="author"><div>ผู้จัดทำ: <b>'+escapeHtml(S.name)+'</b></div><div>เลขที่ <b>'+escapeHtml(S.no)+'</b></div></div>':'';return '<div class="editable title-edit">'+S.titleHTML+'</div><div class="editable story-edit">'+S.storyHTML+'</div>'+img+author}
+function finishGame(){const r=$('reason').value.trim();if(!r){toast('กรุณาเขียนเหตุผลของตัวเองก่อนส่งผลงาน');$('reason').focus();return}S.reason=r;syncDraft();$('finalName').textContent=S.name;$('finalReason').textContent=r;$('finalPaper').innerHTML=paperHTML(true);showPage(5)}
+async function imageAsDataURL(src){if(!src)return '';if(src.startsWith('emoji:'))return src; if(src.startsWith('data:'))return src;try{const res=await fetch(src);const blob=await res.blob();return await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(blob)})}catch(e){return ''}}
+async function downloadWorkFile(){
+  syncDraft();
+  if(!S.titleHTML||!S.storyHTML){toast('กรุณาสร้างชื่อเรื่องและเนื้อหาก่อนดาวน์โหลด');return}
+  toast('กำลังเตรียมไฟล์ผลงาน...');
+  const imageSrc=await imageAsDataURL(S.img?.src||'');
+  const titleText=$('titleEdit').innerText.trim()||'ผลงานของฉัน';
+  const safeName=(S.name||'นักเรียน').replace(/[\\/:*?"<>|]/g,'_');
+  const exportCss=`body{margin:0;background:#eef6fb;font-family:Mali,Arial,sans-serif;color:#24364b}.page{max-width:850px;margin:30px auto;background:#fffdf7;padding:55px 65px;box-shadow:0 10px 35px rgba(0,0,0,.12)}h1{text-align:center;color:#123d70;font-size:38px;margin:0 0 28px;line-height:1.3;overflow-wrap:break-word}.story{font-size:18px;line-height:1.9;white-space:pre-wrap;overflow-wrap:break-word}.image{margin:28px 0;text-align:center}.image img{max-width:100%;max-height:420px;object-fit:contain}.author{margin-top:70px;padding-top:14px;border-top:1px solid #d9cdbb;text-align:center;color:#65727c;line-height:1.8}.reason{margin-top:30px;padding:18px;background:#f4f9fd;border-radius:14px}.reason b{color:#123d70}@media print{body{background:#fff}.page{margin:0;box-shadow:none;max-width:none}}`;
+  const imageMarkup=imageSrc?(imageSrc.startsWith('emoji:')?`<div class="image emoji">${escapeHtml(imageSrc.slice(6))}</div>`:`<div class="image"><img src="${imageSrc}" alt="รูปภาพประกอบ"></div>`):''; const html=`<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(titleText)} — ${escapeHtml(S.name)}</title><link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&display=swap" rel="stylesheet"><style>${exportCss}.emoji{font-size:110px;line-height:1}.page h1 b,.page h1 strong{font-weight:900}.page h1 i,.page h1 em{font-style:italic}.page h1 u{text-decoration:underline}</style></head><body><main class="page"><h1>${S.titleHTML}</h1><div class="story">${S.storyHTML}</div>${imageMarkup}<div class="author">ผู้จัดทำ: <b>${escapeHtml(S.name)}</b><br>เลขที่ <b>${escapeHtml(S.no)}</b></div>${S.reason?`<div class="reason"><b>ข้อ 1. ฉันเลือกจัดชื่อเรื่องแบบนี้ เพราะ...</b><br>${escapeHtml(S.reason)}</div>`:''}</main><div id="jsError" style="display:none;position:fixed;left:12px;right:12px;bottom:12px;background:#fff0f0;color:#a33;padding:12px;border-radius:12px;z-index:9999"></div>
+
+window.addEventListener('error', function(e){
+  const box=document.getElementById('jsError');
+  if(box){box.textContent='เกิดข้อผิดพลาดในการเปิดเกม: '+(e.message||'ไม่ทราบสาเหตุ');box.style.display='block';}
+});
+</body></html>`;
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`ผลงาน_${safeName}.html`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('ดาวน์โหลดไฟล์ผลงานแล้ว');
+}
+function restart(){if(confirm('เริ่มเกมใหม่และลบงานเดิมหรือไม่')){localStorage.removeItem('wa3Draft');localStorage.removeItem('wa3Student');location.reload()}}
+function restore(){try{const st=JSON.parse(localStorage.getItem('wa3Student')||'null');if(st){$('name').value=st.name||'';$('no').value=st.no||''}}catch(e){}try{const d=JSON.parse(localStorage.getItem('wa3Draft')||'null');if(d){Object.assign(S,d);$('titleEdit').innerHTML=d.titleHTML||'';$('storyEdit').innerHTML=d.storyHTML||'';$('reason').value=d.reason||'';renderImage();if(d.name){$('topName').textContent=d.name;$('topNo').textContent=d.no;$('authorName').textContent=d.name;$('authorNo').textContent=d.no}}}catch(e){}}
+restore();
+['titleEdit','storyEdit'].forEach(id=>$(id).addEventListener('input',syncDraft));
+
+
+function pickLibraryImage(emoji){
+  S.imgHTML = '<div class="emoji-img">'+emoji+'</div>';
+  S.img = {emoji:emoji};
+  const area = document.getElementById('imageArea');
+  if(area) area.innerHTML = S.imgHTML;
+  document.querySelectorAll('.library-item').forEach(x=>x.classList.remove('selected'));
+  const hit = document.querySelector('.library-item[data-emoji="'+CSS.escape(emoji)+'"]');
+  if(hit) hit.classList.add('selected');
+}
+function escapeHTML(str){
+  return String(str||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+
+
+function captureStyles(){
+  const t=document.getElementById('titlePreview'), b=document.getElementById('story');
+  S.titleStyle={fontSize:t?.style.fontSize||'32px',bold:t?.classList.contains('bold'),italic:t?.classList.contains('italic'),underline:t?.classList.contains('underline'),align:t?.classList.contains('center')?'center':(t?.classList.contains('right')?'right':'left')};
+  S.bodyStyle={fontSize:b?.style.fontSize||'18px',bold:b?.classList.contains('bold'),italic:b?.classList.contains('italic'),underline:b?.classList.contains('underline'),align:b?.classList.contains('center')?'center':(b?.classList.contains('right')?'right':'left')};
+}
+
+
+function pickEmoji(emoji,name){
+  pickImage('emoji:'+emoji,name||emoji);
+  document.querySelectorAll('.emoji-lib').forEach(b=>b.classList.remove('selected'));
+  const btn=[...document.querySelectorAll('.emoji-lib')].find(b=>b.textContent.includes(emoji));
+  if(btn) btn.classList.add('selected');
+}
+
+
+let soundOn=true;
+const bgm=document.getElementById('bgm');
+function updateSoundButton(){
+  const b=document.getElementById('soundBtn');
+  if(!b)return;
+  b.textContent=soundOn?'🔊 เสียงเปิด':'🔇 เสียงปิด';
+  b.setAttribute('aria-pressed',String(soundOn));
+}
+function startSound(){
+  if(!soundOn)return;
+  if(!bgm)return;
+  bgm.volume=.35;
+  bgm.play().catch(()=>{});
+}
+function toggleSound(){
+  soundOn=!soundOn;
+  if(soundOn) startSound();
+  else if(bgm) bgm.pause();
+  updateSoundButton();
+}
+updateSoundButton();
+
+</script>
+</body>
+</html>
